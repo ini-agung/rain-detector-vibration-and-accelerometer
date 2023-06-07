@@ -1,0 +1,4 @@
+void UPDATEOTA(){
+  isUpdateOta = false;
+  
+}
