@@ -18,6 +18,7 @@ void setup() {
 
   initOled();
   initMpu();
+  initWifi();
   if (isRestart) RESTART(device);
 
   xTaskCreatePinnedToCore(
@@ -38,6 +39,15 @@ void loop() {
 }
 
 void buttonSelectMode() {
+  selectMode       = false;
+  isCalibrate      = false;
+  isRestart        = false;
+  interrupt        = false;
+  selectMode       = false;
+  RUNMODE          = false;
+  isSendingData    = false;
+  isUpdateOta      = false;
+  
   selectedMenuItem = (selectedMenuItem + 1) % MENU_ITEM_COUNT;
   display.clearDisplay();
   display.setTextSize(1);
@@ -53,34 +63,111 @@ void buttonSelectMode() {
     }
     display.println(menuItems[i]);
     if (pinEnterMode == LOW) {
-      selectMode = false;
       switch (i) {
         case 0:
-          RUNMODE = true;
+          delay(500);
+          selectMode       = false;
+          isCalibrate      = false;
+          isRestart        = false;
+          interrupt        = false;
+          selectMode       = false;
+          RUNMODE          = true;
+          isSendingData    = true;
+          isUpdateOta      = false;
           break;
 
         case 1:
-          RUNMODE = false;
+          delay(500);
+          selectMode       = true;
+          isCalibrate      = false;
+          isRestart        = false;
+          interrupt        = false;
+          selectMode       = false;
+          RUNMODE          = false;
+          isSendingData    = false;
+          isUpdateOta      = false;
           break;
           
         case 2:
+          selectMode       = false;
+          isCalibrate      = false;
+          isRestart        = true;
+          interrupt        = false;
+          selectMode       = false;
+          RUNMODE          = false;
+          isSendingData    = false;
+          isUpdateOta      = false;
+          delay(500);
           RESTART("Manual Restart");
           break;
 
         case 3:
+          selectMode       = false;
+          isCalibrate      = true;
+          isRestart        = false;
+          interrupt        = false;
+          selectMode       = false;
+          RUNMODE          = false;
+          isSendingData    = false;
+          isUpdateOta      = false;
+          delay(500);
           CALIBRATE();
           break;
 
         case 4:
-          isUpdateOta = true;
+          selectMode       = false;
+          isCalibrate      = false;
+          isRestart        = false;
+          interrupt        = false;
+          selectMode       = false;
+          RUNMODE          = false;
+          isPrintData      = false;
+          isSendingData    = false;
+          isUpdateOta      = true;
+          delay(500);
+          UPDATEOTA();
           break;
 
         case 5:
-          isSendingData = true;
+          selectMode       = false;
+          isCalibrate      = false;
+          isRestart        = false;
+          interrupt        = false;
+          selectMode       = false;
+          RUNMODE          = true;
+          isPrintData      = true;
+          isSendingData    = true;
+          isUpdateOta      = false;
+          delay(500);
+          SENDING();
           break;
 
         case 6:
+          selectMode       = false;
+          isCalibrate      = false;
+          isRestart        = true;
+          interrupt        = false;
+          selectMode       = false;
+          RUNMODE          = false;
+          isPrintData      = false;
+          isSendingData    = false;
+          isUpdateOta      = false;
+          delay(500);
           RESTART("Reconnect Wifi");
+          break;
+
+        case 7:
+          selectMode       = false;
+          isCalibrate      = false;
+          isRestart        = false;
+          interrupt        = false;
+          selectMode       = false;
+          RUNMODE          = true;
+          isPrintData      = true;
+          isSendingData    = false;
+          isUpdateOta      = false;
+          delay(500);
+          READ_ALL_SENSOR(); // if true then print to lcd
           break;
       }
     }
